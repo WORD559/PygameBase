@@ -11,6 +11,7 @@ class App():
 
     def init(self):
         """Commands to be processed before the application starts"""
+        self.clock = pygame.time.Clock()
         pygame.display.set_caption(self.title)
         if self.icon != None:
             self.icon = pygame.image.load(self.icon)
@@ -37,10 +38,15 @@ class App():
         if e != None:
             raise e
 
-    def start(self):
+    def start(self,fps_limit=0):
         """Start the application"""
+        self.fps_limit = fps_limit #This way fps can be dynamically adjusted
         ex = None
-        self.running = self.init()
+        try:
+            self.running = self.init()
+        except Exception,e:
+            self.running = False
+            ex = e
         
         while self.running == True:
             try:
@@ -49,9 +55,11 @@ class App():
 
                 self.__loop__()
                 self.__render__()
+                self.clock.tick(self.fps_limit)
             except Exception,e:
                 self.running = False
                 ex = e
     
 
         self.__cleanup__(ex)
+
